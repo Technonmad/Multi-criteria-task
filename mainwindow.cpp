@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QAxObject>
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QRadioButton>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -53,5 +56,21 @@ void MainWindow::on_action_triggered()
 
     workbook->dynamicCall("Close");
     excel->dynamicCall("Quit()");
+
+   QVBoxLayout *criteriabox1_layout = new QVBoxLayout;
+   QVBoxLayout *valuebox1_layout = new QVBoxLayout;
+   QVBoxLayout *minmaxbox1_layout = new QVBoxLayout;
+
+   for ( int col = 0; col < int_cols; ++col )
+   {
+       QTableWidgetItem *item = ui->tableWidget->item(0, col);
+       criteriabox1_layout->addWidget(new QCheckBox(item->text()));
+       valuebox1_layout->addWidget(new QLineEdit);
+       minmaxbox1_layout->addWidget(new QCheckBox("min"));
+   }
+
+   ui->criteria->setLayout(criteriabox1_layout);
+   ui->value->setLayout(valuebox1_layout);
+   ui->minmax->setLayout(minmaxbox1_layout);
 }
 
