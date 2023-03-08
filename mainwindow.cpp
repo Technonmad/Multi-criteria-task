@@ -5,6 +5,9 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QRadioButton>
+#include <stdio.h>
+#include <iostream>
+#include <dynamiccheckbox.h>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -61,16 +64,30 @@ void MainWindow::on_action_triggered()
    QVBoxLayout *valuebox1_layout = new QVBoxLayout;
    QVBoxLayout *minmaxbox1_layout = new QVBoxLayout;
 
+   DynamicCheckBox *check_box = new DynamicCheckBox();
+   check_box->cleanID();
+   delete check_box;
+
+   delete ui->criteria->layout();
+   delete ui->value->layout();
+   delete ui->minmax->layout();
+
+
+
    for ( int col = 0; col < int_cols; ++col )
    {
+       DynamicCheckBox *check_box = new DynamicCheckBox();
        QTableWidgetItem *item = ui->tableWidget->item(0, col);
-       criteriabox1_layout->addWidget(new QCheckBox(item->text()));
+       check_box->setText(item->text());
+       criteriabox1_layout->addWidget(check_box);
        valuebox1_layout->addWidget(new QLineEdit);
        minmaxbox1_layout->addWidget(new QCheckBox("min"));
+       std::cout<<check_box->getID()<<std::endl;
    }
 
    ui->criteria->setLayout(criteriabox1_layout);
    ui->value->setLayout(valuebox1_layout);
    ui->minmax->setLayout(minmaxbox1_layout);
+
 }
 
