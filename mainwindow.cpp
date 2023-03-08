@@ -77,17 +77,61 @@ void MainWindow::on_action_triggered()
    for ( int col = 0; col < int_cols; ++col )
    {
        DynamicCheckBox *check_box = new DynamicCheckBox();
+       QLineEdit *line_edit = new QLineEdit();
        QTableWidgetItem *item = ui->tableWidget->item(0, col);
        check_box->setText(item->text());
+       line_edit->setPlaceholderText("Вес");
        criteriabox1_layout->addWidget(check_box);
-       valuebox1_layout->addWidget(new QLineEdit);
-       minmaxbox1_layout->addWidget(new QCheckBox("min"));
+       valuebox1_layout->addWidget(line_edit);
        std::cout<<check_box->getID()<<std::endl;
+   }
+
+   //Чтобы id кнопок не перемешивались
+   for ( int col = 0; col < int_cols; ++col )
+   {
+       DynamicCheckBox *check_box_min = new DynamicCheckBox();
+       check_box_min->setText("min");
+       minmaxbox1_layout->addWidget(check_box_min);
    }
 
    ui->criteria->setLayout(criteriabox1_layout);
    ui->value->setLayout(valuebox1_layout);
    ui->minmax->setLayout(minmaxbox1_layout);
+
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    //int int_cols = ui->tableWidget->columnCount();
+    int int_rows = ui->tableWidget->rowCount();
+
+    std::vector<int> chosed_criterias;
+    QObjectList check_list = ui->criteria->children();
+    QObjectList::const_iterator it = check_list.begin();
+    QObjectList::const_iterator end = check_list.end();
+    while ( it != end )
+    {
+        DynamicCheckBox *check_box = (DynamicCheckBox *)(*it++);
+        if ( check_box->isChecked() )
+            chosed_criterias.push_back(check_box->getID());
+    }
+
+    int max = 0;
+    for ( int criterias: chosed_criterias)
+    {
+        max = 0;
+        for ( int row = 1; row < int_rows; ++row )
+        {
+            QTableWidgetItem *item = ui->tableWidget->item(row, criterias-1);
+//            if ( item )
+//                qDebug() << item->text();
+            if (item && item->text().toInt() > max)
+                max = item->text().toInt();
+        }
+    }
+
+    std::cout<<max<<std::endl;
 
 }
 
