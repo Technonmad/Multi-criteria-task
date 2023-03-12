@@ -135,3 +135,9 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
+
+void MainWindow::on_wallButton_clicked()
+{
+    qDebug() << "Clicked!";
+}
+
