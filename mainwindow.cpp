@@ -104,6 +104,7 @@ void MainWindow::on_action_triggered()
 void MainWindow::on_pushButton_clicked()
 {
     //int int_cols = ui->tableWidget->columnCount();
+    delete ui->wall_answer->layout();
     int int_rows = ui->tableWidget->rowCount();
 
     std::vector<int> chosed_criterias;
@@ -139,5 +140,73 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_wallButton_clicked()
 {
     qDebug() << "Clicked!";
+    delete ui->wall_answer->layout();
+
+    std::vector<int> wall_list;
+    std::vector<int> wall_list_values;
+    const QList<QLineEdit*> wall_check_list = ui->value_wall->findChildren<QLineEdit*>();
+    std::vector<int> answer;
+    bool flag = true;
+
+    for ( QLineEdit *it: wall_check_list )
+    {
+        if ( it->text().size() > 0 )
+        {
+            wall_list.push_back(it->objectName().back().digitValue());
+            wall_list_values.push_back(it->text().toInt());
+        }
+
+    }
+
+    //не правильно работает поиск ответов
+    for ( int rows = 1; rows < ui->tableWidget->rowCount() - 1; ++rows)
+    {
+        flag = true;
+        for ( int iter: wall_list )
+        {
+            if ( ui->tableWidget->item(rows, iter + 1)->text().toInt() < wall_list_values[iter])
+                flag = false;
+        }
+
+        if ( flag )
+            answer.push_back(rows);
+
+    }
+
+    QVBoxLayout *p_wall_answer_layout = new QVBoxLayout;
+    for ( int it: answer )
+    {
+        p_wall_answer_layout->addWidget(new QLabel(ui->tableWidget->item(it, 1)->text()));
+    }
+    ui->wall_answer->setLayout(p_wall_answer_layout);
+
+}
+
+
+void MainWindow::on_tabWidget_tabBarClicked(int index)
+{
+    if ( index == 3 )
+    {
+        QVBoxLayout *criteriabox1_layout = new QVBoxLayout;
+        QVBoxLayout *valuebox1_layout = new QVBoxLayout;
+
+        delete ui->criteria_wall->layout();
+        delete ui->value_wall->layout();
+
+        for ( int col = 0; col < ui->tableWidget->columnCount() - 1; ++col )
+        {
+            QLabel *name = new QLabel();
+            QLineEdit *line_edit = new QLineEdit();
+            QTableWidgetItem *item = ui->tableWidget->item(0, col);
+            name->setText(item->text());
+            line_edit->setObjectName("wall_criteria_" + std::to_string(col));
+            line_edit->setPlaceholderText("Граница");
+            criteriabox1_layout->addWidget(name);
+            valuebox1_layout->addWidget(line_edit);
+        }
+
+        ui->criteria_wall->setLayout(criteriabox1_layout);
+        ui->value_wall->setLayout(valuebox1_layout);
+    }
 }
 

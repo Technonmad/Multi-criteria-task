@@ -23,6 +23,8 @@ private slots:
 
     void on_wallButton_clicked();
 
+    void on_tabWidget_tabBarClicked(int index);
+
 private:
     Ui::MainWindow *ui;
 };
