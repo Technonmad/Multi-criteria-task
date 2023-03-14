@@ -51,9 +51,20 @@ void MainWindow::on_action_triggered()
         for ( int col = 0; col < int_cols; ++col )
         {
             QAxObject *cell = worksheet->querySubObject("Cells(int,int)", row + 1, col + 1);
-            QVariant value = cell->dynamicCall("Value()");
-            QTableWidgetItem *item = new QTableWidgetItem(value.toString());
-            ui->tableWidget->setItem(row, col, item);
+            if ( col == 7 && row != 0)
+            {
+                QVariant value = cell->dynamicCall("Value()").toInt();
+                QTableWidgetItem *item = new QTableWidgetItem(value.toString());
+                ui->tableWidget->setItem(row, col, item);
+            }
+            else
+            {
+                QVariant value = cell->dynamicCall("Value()");
+                QTableWidgetItem *item = new QTableWidgetItem(value.toString());
+                ui->tableWidget->setItem(row, col, item);
+            }
+
+
         }
     }
 
@@ -103,8 +114,7 @@ void MainWindow::on_action_triggered()
 
 void MainWindow::on_pushButton_clicked()
 {
-    //int int_cols = ui->tableWidget->columnCount();
-    delete ui->wall_answer->layout();
+    delete ui->scrollArea->layout();
     int int_rows = ui->tableWidget->rowCount();
 
     std::vector<int> chosed_criterias;
@@ -125,8 +135,7 @@ void MainWindow::on_pushButton_clicked()
         for ( int row = 1; row < int_rows; ++row )
         {
             QTableWidgetItem *item = ui->tableWidget->item(row, criterias-1);
-//            if ( item )
-//                qDebug() << item->text();
+
             if (item && item->text().toInt() > max)
                 max = item->text().toInt();
         }
@@ -140,7 +149,16 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_wallButton_clicked()
 {
     qDebug() << "Clicked!";
-    delete ui->wall_answer->layout();
+    if ( ui->wall_answer->layout() != NULL )
+    {
+        QLayoutItem* item;
+        while ( ( item = ui->wall_answer->layout()->takeAt( 0 ) ) != NULL )
+        {
+            delete item->widget();
+            delete item;
+        }
+        delete ui->wall_answer->layout();
+    }
 
     std::vector<int> wall_list;
     std::vector<int> wall_list_values;
@@ -158,14 +176,18 @@ void MainWindow::on_wallButton_clicked()
 
     }
 
-    //не правильно работает поиск ответов
     for ( int rows = 1; rows < ui->tableWidget->rowCount() - 1; ++rows)
     {
         flag = true;
-        for ( int iter: wall_list )
+        for ( size_t it = 0; it < wall_list.size(); ++it )
         {
-            if ( ui->tableWidget->item(rows, iter + 1)->text().toInt() < wall_list_values[iter])
+            qDebug() << ui->tableWidget->item(rows, wall_list.at(it))->text();
+
+            if ( ui->tableWidget->item(rows, wall_list.at(it))->text().toInt() < wall_list_values[it])
+            {
                 flag = false;
+                break;
+            }
         }
 
         if ( flag )
@@ -174,11 +196,17 @@ void MainWindow::on_wallButton_clicked()
     }
 
     QVBoxLayout *p_wall_answer_layout = new QVBoxLayout;
+    if ( answer.size() == 0 )
+    {
+        p_wall_answer_layout->addWidget(new QLabel("Нет альтернатив"));
+        ui->wall_answer->setLayout(p_wall_answer_layout);
+    }
     for ( int it: answer )
     {
         p_wall_answer_layout->addWidget(new QLabel(ui->tableWidget->item(it, 1)->text()));
     }
     ui->wall_answer->setLayout(p_wall_answer_layout);
+
 
 }
 
