@@ -25,6 +25,8 @@ private slots:
 
     void on_tabWidget_tabBarClicked(int index);
 
+    void on_paretoButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -13,11 +13,13 @@ CONFIG += c++17
 SOURCES += \
     dynamiccheckbox.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    pareto.cpp
 
 HEADERS += \
     dynamiccheckbox.h \
-    mainwindow.h
+    mainwindow.h \
+    pareto.h
 
 FORMS += \
     mainwindow.ui

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <dynamiccheckbox.h>
+#include <pareto.h>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -21,7 +22,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 void MainWindow::on_action_triggered()
 {
@@ -51,7 +51,7 @@ void MainWindow::on_action_triggered()
         for ( int col = 0; col < int_cols; ++col )
         {
             QAxObject *cell = worksheet->querySubObject("Cells(int,int)", row + 1, col + 1);
-            if ( col == 7 && row != 0)
+            if ( col == 5 && row != 0)
             {
                 QVariant value = cell->dynamicCall("Value()").toInt();
                 QTableWidgetItem *item = new QTableWidgetItem(value.toString());
@@ -145,7 +145,7 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-
+//Решение указанием нижних границ критериев
 void MainWindow::on_wallButton_clicked()
 {
     qDebug() << "Clicked!";
@@ -236,5 +236,39 @@ void MainWindow::on_tabWidget_tabBarClicked(int index)
         ui->criteria_wall->setLayout(criteriabox1_layout);
         ui->value_wall->setLayout(valuebox1_layout);
     }
+}
+
+
+
+void MainWindow::on_paretoButton_clicked()
+{
+    qDebug() << "Pareto clicked!";
+
+    std::vector<std::vector<int>> alternatives;
+    std::vector<std::vector<int>> answers;
+    std::vector<int> alternative;
+
+    for (int row = 1; row < ui->tableWidget->rowCount() - 1; ++row)
+    {
+        for (int col = 2; col < ui->tableWidget->columnCount() - 1; ++col)
+        {
+            QTableWidgetItem *item = ui->tableWidget->item(row, col);
+            alternative.emplace_back(item->text().toInt());
+
+            delete item;
+        }
+
+        alternatives.emplace_back(alternative);
+    }
+
+    Pareto *pareto = new Pareto();
+    answers = pareto->getParetoList(alternatives);
+
+    for (std::vector<std::vector<int>>::iterator yi = answers.begin(); yi != answers.end(); ++yi)
+    {
+        qDebug() << *yi << "\n";
+    }
+
+    delete pareto;
 }
 
